@@ -11,27 +11,31 @@
 
 namespace Zenstruck\Filesystem\Doctrine\Mapping;
 
-use Zenstruck\Filesystem\Node\Metadata;
 use Zenstruck\Filesystem\Node\Path\Namer;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
  */
 #[\Attribute(\Attribute::TARGET_PROPERTY)]
-class StoreAsPath extends Stateful
+final class StoreAsFilename extends StoreAsPath
 {
+    public string|Namer $prefix;
+
     public function __construct(
         string $filesystem,
+        string|Namer $prefix,
         string|Namer|null $namer = null,
         bool $deleteOnRemove = true,
         bool $deleteOnUpdate = true,
-        array $column = [],
+        array $column = []
     ) {
-        parent::__construct(Metadata::PATH, $filesystem, $namer, $deleteOnRemove, $deleteOnUpdate, $column);
-    }
+        parent::__construct($filesystem, $namer, $deleteOnRemove, $deleteOnUpdate, $column);
 
-    public function filesystem(): string
-    {
-        return parent::filesystem(); // @phpstan-ignore-line
+        try {
+            $this->prefix = self::parseNamer($prefix) ?? $prefix;
+        } catch (\InvalidArgumentException) {
+            // use plain string as the prefix
+            $this->prefix = $prefix;
+        }
     }
 }

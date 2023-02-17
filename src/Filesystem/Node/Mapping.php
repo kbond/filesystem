@@ -99,20 +99,7 @@ class Mapping
         return !\in_array(Metadata::DSN, $this->metadata, true) && !\in_array(Metadata::PATH, $this->metadata, true);
     }
 
-    private function requiresFilesystem(): bool
-    {
-        if (Metadata::DSN === $this->metadata) {
-            return false;
-        }
-
-        if (\is_array($this->metadata) && \in_array(Metadata::DSN, $this->metadata, true)) {
-            return false;
-        }
-
-        return true;
-    }
-
-    private static function parseNamer(string|Namer|null $namer): ?Namer
+    final protected static function parseNamer(string|Namer|null $namer): ?Namer
     {
         if (null === $namer || $namer instanceof Namer) {
             return $namer;
@@ -135,5 +122,18 @@ class Mapping
         }
 
         throw new \InvalidArgumentException(\sprintf('Unable to parse namer "%s".', $namer));
+    }
+
+    private function requiresFilesystem(): bool
+    {
+        if (Metadata::DSN === $this->metadata) {
+            return false;
+        }
+
+        if (\is_array($this->metadata) && \in_array(Metadata::DSN, $this->metadata, true)) {
+            return false;
+        }
+
+        return true;
     }
 }

@@ -15,9 +15,11 @@ use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Zenstruck\Filesystem\Doctrine\Types\FileDsnType;
 use Zenstruck\Filesystem\Doctrine\Types\FileMetadataType;
+use Zenstruck\Filesystem\Doctrine\Types\FileNameType;
 use Zenstruck\Filesystem\Doctrine\Types\FilePathType;
 use Zenstruck\Filesystem\Doctrine\Types\ImageDsnType;
 use Zenstruck\Filesystem\Doctrine\Types\ImageMetadataType;
+use Zenstruck\Filesystem\Doctrine\Types\ImageNameType;
 use Zenstruck\Filesystem\Doctrine\Types\ImagePathType;
 
 /**
@@ -30,6 +32,8 @@ final class RegisterDoctrineTypePass implements CompilerPassInterface
     public const TYPES = [
         FilePathType::class,
         ImagePathType::class,
+        FileNameType::class,
+        ImageNameType::class,
         FileDsnType::class,
         ImageDsnType::class,
         FileMetadataType::class,

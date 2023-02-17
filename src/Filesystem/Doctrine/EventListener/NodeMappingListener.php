@@ -20,13 +20,16 @@ use Zenstruck\Filesystem\Doctrine\Mapping\HasFiles;
 use Zenstruck\Filesystem\Doctrine\Mapping\Stateful;
 use Zenstruck\Filesystem\Doctrine\Mapping\Stateless;
 use Zenstruck\Filesystem\Doctrine\Mapping\StoreAsDsn;
+use Zenstruck\Filesystem\Doctrine\Mapping\StoreAsFilename;
 use Zenstruck\Filesystem\Doctrine\Mapping\StoreAsPath;
 use Zenstruck\Filesystem\Doctrine\Mapping\StoreWithMetadata;
 use Zenstruck\Filesystem\Doctrine\Types\FileDsnType;
 use Zenstruck\Filesystem\Doctrine\Types\FileMetadataType;
+use Zenstruck\Filesystem\Doctrine\Types\FileNameType;
 use Zenstruck\Filesystem\Doctrine\Types\FilePathType;
 use Zenstruck\Filesystem\Doctrine\Types\ImageDsnType;
 use Zenstruck\Filesystem\Doctrine\Types\ImageMetadataType;
+use Zenstruck\Filesystem\Doctrine\Types\ImageNameType;
 use Zenstruck\Filesystem\Doctrine\Types\ImagePathType;
 use Zenstruck\Filesystem\Node\File;
 use Zenstruck\Filesystem\Node\File\Image;
@@ -122,6 +125,7 @@ final class NodeMappingListener
     private static function doctrineTypeFor(Stateful $mapping, string $nodeClass): string
     {
         return match ($mapping::class) {
+            StoreAsFilename::class => File::class === $nodeClass ? FileNameType::NAME : ImageNameType::NAME,
             StoreAsPath::class => File::class === $nodeClass ? FilePathType::NAME : ImagePathType::NAME,
             StoreAsDsn::class => File::class === $nodeClass ? FileDsnType::NAME : ImageDsnType::NAME,
             StoreWithMetadata::class => File::class === $nodeClass ? FileMetadataType::NAME : ImageMetadataType::NAME,

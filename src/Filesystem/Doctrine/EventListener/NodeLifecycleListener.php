@@ -18,11 +18,13 @@ use Doctrine\Persistence\Event\LifecycleEventArgs;
 use Doctrine\Persistence\Event\ManagerEventArgs;
 use Doctrine\Persistence\Event\PreUpdateEventArgs;
 use Doctrine\Persistence\ObjectManager;
+use League\Flysystem\PathPrefixer;
 use Psr\Container\ContainerInterface;
 use Zenstruck\Filesystem;
 use Zenstruck\Filesystem\Doctrine\Mapping\HasFiles;
 use Zenstruck\Filesystem\Doctrine\Mapping\Stateful;
 use Zenstruck\Filesystem\Doctrine\Mapping\StoreAsDsn;
+use Zenstruck\Filesystem\Doctrine\Mapping\StoreAsFilename;
 use Zenstruck\Filesystem\Doctrine\Mapping\StoreWithMetadata;
 use Zenstruck\Filesystem\Node\Dsn;
 use Zenstruck\Filesystem\Node\File;
@@ -34,6 +36,7 @@ use Zenstruck\Filesystem\Node\File\LazyFile;
 use Zenstruck\Filesystem\Node\File\PendingFile;
 use Zenstruck\Filesystem\Node\File\SerializableFile;
 use Zenstruck\Filesystem\Node\Mapping;
+use Zenstruck\Filesystem\Node\Path\Namer;
 use Zenstruck\Filesystem\Node\PathGenerator;
 
 /**
@@ -74,6 +77,14 @@ final class NodeLifecycleListener
             }
 
             $file->setFilesystem(fn() => $this->filesystemFor($mapping, $file));
+
+            if ($mapping instanceof StoreAsFilename) {
+                $file->setPath(
+                    fn() => (new PathPrefixer($this->generatePrefix($mapping->prefix, $file, $object)))->prefixPath($file->path()->name())
+                );
+
+                continue;
+            }
 
             if ($mapping->requiresPathGenerator()) {
                 $file->setPath(fn() => $this->generatePath($mapping, $file, $object, $field));
@@ -219,6 +230,15 @@ final class NodeLifecycleListener
         }
 
         $this->postFlushOperations = $this->onFailureOperations = [];
+    }
+
+    private function generatePrefix(string|Namer $namer, File $file, object $object): string
+    {
+        if (\is_string($namer)) {
+            return $namer;
+        }
+
+        return $this->container->get(PathGenerator::class)->generate($namer, $file, ['this' => $object]);
     }
 
     private static function createSerialized(StoreWithMetadata $mapping, File $file): SerializableFile
