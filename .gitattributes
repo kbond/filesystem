@@ -1,3 +1,4 @@
 /.github export-ignore
 /tests export-ignore
+/bin export-ignore
 phpunit.dist.xml export-ignore
