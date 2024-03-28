@@ -35,7 +35,7 @@ use Zenstruck\Filesystem\Doctrine\Twig\MappingManagerExtension;
 use Zenstruck\Filesystem\Event\EventDispatcherFilesystem;
 use Zenstruck\Filesystem\FilesystemRegistry;
 use Zenstruck\Filesystem\Flysystem\AdapterFactory;
-use Zenstruck\Filesystem\Flysystem\TransformUrlGenerator;
+use Zenstruck\Filesystem\Flysystem\UrlGeneration\TransformUrlGenerator;
 use Zenstruck\Filesystem\FlysystemFilesystem;
 use Zenstruck\Filesystem\LoggableFilesystem;
 use Zenstruck\Filesystem\MultiFilesystem;

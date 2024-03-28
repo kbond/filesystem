@@ -13,7 +13,7 @@ namespace Zenstruck\Filesystem\Glide;
 
 use League\Flysystem\Config;
 use League\Glide\Urls\UrlBuilder;
-use Zenstruck\Filesystem\Flysystem\TransformUrlGenerator;
+use Zenstruck\Filesystem\Flysystem\UrlGeneration\TransformUrlGenerator;
 
 /**
  * @author Jakub Caban <kuba.iluvatar@gmail.com>
