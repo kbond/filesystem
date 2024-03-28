@@ -120,7 +120,10 @@ final class TestKernel extends Kernel
             'filesystems' => [
                 'public' => [
                     'dsn' => '%kernel.project_dir%/var/public',
-                    'public_url' => '/prefix',
+                    'public_url' => [
+                        'prefix' => '/prefix',
+                        'version' => 'size',
+                    ],
                     'temporary_url' => 'route:public_temp',
                     'image_url' => 'route:public_transform',
                     'reset_before_tests' => true,

@@ -20,6 +20,7 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\VarExporter\LazyObjectInterface;
 use Zenstruck\Filesystem;
+use Zenstruck\Filesystem\Node\Mapping;
 use Zenstruck\Filesystem\Operation;
 
 /**
@@ -82,18 +83,22 @@ final class Configuration implements ConfigurationInterface
                             ->arrayNode('public_url')
                                 ->info('Public URL generator for this filesystem')
                                 ->beforeNormalization()
-                                ->ifString()
-                                ->then(function(string $v) {
-                                    return match (true) {
-                                        \str_starts_with($v, 'route:') => ['route' => ['name' => \mb_substr($v, 6)]],
-                                        \str_starts_with($v, '@') => ['service' => \mb_substr($v, 1)],
-                                        default => ['prefix' => $v],
-                                    };
-                                })
+                                    ->ifString()
+                                    ->then(function(string $v) {
+                                        return match (true) {
+                                            \str_starts_with($v, 'route:') => ['route' => ['name' => \mb_substr($v, 6)]],
+                                            \str_starts_with($v, '@') => ['service' => \mb_substr($v, 1)],
+                                            default => ['prefix' => $v],
+                                        };
+                                    })
                                 ->end()
                                 ->validate()
-                                    ->ifTrue(fn($v) => \count(\array_filter($v)) > 1)
+                                    ->ifTrue(fn($v) => \count(\array_filter($v)) > 2)
                                     ->thenInvalid('Can only set one of "prefix", "service", "route"')
+                                ->end()
+                                ->validate()
+                                    ->ifTrue(fn($v) => 1 === \count(\array_filter($v)) && $v['version']['enabled'])
+                                    ->thenInvalid('Must set a url generation strategy to use versioning')
                                 ->end()
                                 ->children()
                                     ->variableNode('prefix')
@@ -129,6 +134,25 @@ final class Configuration implements ConfigurationInterface
                                                 ->info('Default expiry')
                                                 ->example('+ 30 minutes')
                                                 ->defaultNull()
+                                            ->end()
+                                        ->end()
+                                    ->end()
+                                    ->arrayNode('version')
+                                        ->info('Enables cache busting for public urls')
+                                        ->beforeNormalization()
+                                            ->ifString()
+                                            ->then(fn(string $v) => ['metadata' => $v])
+                                        ->end()
+                                        ->canBeEnabled()
+                                        ->children()
+                                            ->enumNode('metadata')
+                                                ->info('The metadata to use for versioning')
+                                                ->values([Mapping::LAST_MODIFIED, Mapping::SIZE, Mapping::CHECKSUM])
+                                                ->defaultValue(Mapping::LAST_MODIFIED)
+                                            ->end()
+                                            ->scalarNode('parameter')
+                                                ->info('The query parameter to use for versioning')
+                                                ->defaultValue('v')
                                             ->end()
                                         ->end()
                                     ->end()

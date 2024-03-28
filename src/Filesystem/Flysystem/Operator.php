@@ -19,6 +19,7 @@ use League\Flysystem\UrlGeneration\TemporaryUrlGenerator;
 use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Zenstruck\Filesystem\Exception\UnsupportedFeature;
+use Zenstruck\Filesystem\Flysystem\UrlGeneration\TransformUrlGenerator;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>

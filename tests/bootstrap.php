@@ -17,8 +17,10 @@ use League\Flysystem\UrlGeneration\PrefixPublicUrlGenerator;
 use League\Flysystem\UrlGeneration\PublicUrlGenerator;
 use League\Flysystem\UrlGeneration\TemporaryUrlGenerator;
 use Zenstruck\Filesystem;
-use Zenstruck\Filesystem\Flysystem\TransformUrlGenerator;
+use Zenstruck\Filesystem\Flysystem\UrlGeneration\TransformUrlGenerator;
+use Zenstruck\Filesystem\Flysystem\UrlGeneration\VersionUrlGenerator;
 use Zenstruck\Filesystem\FlysystemFilesystem;
+use Zenstruck\Filesystem\Node\Mapping;
 
 require_once __DIR__.'/../vendor/autoload.php';
 
@@ -54,7 +56,7 @@ function in_memory_filesystem(string $name = 'default'): Filesystem
         new InMemoryFilesystemAdapter(),
         name: $name,
         features: [
-            PublicUrlGenerator::class => new PrefixPublicUrlGenerator('/prefix'),
+            PublicUrlGenerator::class => new VersionUrlGenerator(new PrefixPublicUrlGenerator('/prefix'), Mapping::SIZE),
             TemporaryUrlGenerator::class => new class() implements TemporaryUrlGenerator {
                 public function temporaryUrl(string $path, DateTimeInterface $expiresAt, Config $config): string
                 {

@@ -93,7 +93,8 @@ final class ZenstruckFilesystemBundleTest extends KernelTestCase
     {
         $publicFile = $this->filesystem()->write('public://foo/file.png', 'content')->ensureImage();
 
-        $this->assertSame('/prefix/foo/file.png', $publicFile->publicUrl());
+        $this->assertSame('/prefix/foo/file.png?v=7', $publicFile->publicUrl());
+        $this->assertSame('/prefix/foo/file.png', $publicFile->publicUrl(['version' => false]));
         $this->assertStringContainsString('/temp/foo/file.png', $publicFile->temporaryUrl('tomorrow'));
         $this->assertStringContainsString('_hash=', $publicFile->temporaryUrl('tomorrow'));
         $this->assertStringContainsString('_expires=', $publicFile->temporaryUrl('tomorrow'));

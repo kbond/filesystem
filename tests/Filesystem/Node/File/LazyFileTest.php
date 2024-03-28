@@ -180,7 +180,7 @@ class LazyFileTest extends TestCase
         $this->assertSame('image/png', $file->mimeType());
         $this->assertSame(7, $file->size());
         $this->assertSame('9a0364b9e99bb480dd25e1f0284c8555', $file->checksum());
-        $this->assertSame('/prefix/some/file.png', $file->publicUrl());
+        $this->assertSame('/prefix/some/file.png?v=7', $file->publicUrl());
     }
 
     /**

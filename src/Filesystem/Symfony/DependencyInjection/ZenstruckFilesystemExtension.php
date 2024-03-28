@@ -13,7 +13,9 @@ namespace Zenstruck\Filesystem\Symfony\DependencyInjection;
 
 use League\Flysystem\Filesystem as Flysystem;
 use League\Flysystem\FilesystemAdapter;
+use League\Flysystem\UrlGeneration\PrefixPublicUrlGenerator;
 use League\Flysystem\UrlGeneration\PublicUrlGenerator;
+use League\Flysystem\UrlGeneration\ShardedPrefixPublicUrlGenerator;
 use League\Flysystem\UrlGeneration\TemporaryUrlGenerator;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\DependencyInjection\Argument\ServiceLocatorArgument;
@@ -35,7 +37,8 @@ use Zenstruck\Filesystem\Doctrine\Twig\MappingManagerExtension;
 use Zenstruck\Filesystem\Event\EventDispatcherFilesystem;
 use Zenstruck\Filesystem\FilesystemRegistry;
 use Zenstruck\Filesystem\Flysystem\AdapterFactory;
-use Zenstruck\Filesystem\Flysystem\TransformUrlGenerator;
+use Zenstruck\Filesystem\Flysystem\UrlGeneration\TransformUrlGenerator;
+use Zenstruck\Filesystem\Flysystem\UrlGeneration\VersionUrlGenerator;
 use Zenstruck\Filesystem\FlysystemFilesystem;
 use Zenstruck\Filesystem\LoggableFilesystem;
 use Zenstruck\Filesystem\MultiFilesystem;
@@ -294,7 +297,15 @@ final class ZenstruckFilesystemExtension extends ConfigurableExtension
         // public url config
         switch (true) {
             case isset($config['public_url']['prefix']):
-                $config['config']['public_url'] = $config['public_url']['prefix'];
+                $container
+                    ->register(
+                        $id = '.zenstruck_filesystem.filesystem_public_url.'.$name,
+                        \is_array($config['public_url']['prefix']) ? ShardedPrefixPublicUrlGenerator::class : PrefixPublicUrlGenerator::class,
+                    )
+                    ->setArguments([$config['public_url']['prefix']])
+                ;
+
+                $features[PublicUrlGenerator::class] = new Reference($id);
 
                 break;
 
@@ -331,6 +342,19 @@ final class ZenstruckFilesystemExtension extends ConfigurableExtension
                 break;
         }
 
+        if (isset($config['public_url']) && $config['public_url']['version']['enabled'] && isset($features[PublicUrlGenerator::class])) {
+            $container->register($id = '.zenstruck_filesystem.filesystem_version_public_url.'.$name, VersionUrlGenerator::class)
+                ->setDecoratedService((string) $features[PublicUrlGenerator::class])
+                ->setArguments([
+                    new Reference('.inner'),
+                    $config['public_url']['version']['metadata'],
+                    $config['public_url']['version']['parameter'],
+                ])
+            ;
+
+            $features[PublicUrlGenerator::class] = new Reference($id);
+        }
+
         // temporary url config
         switch (true) {
             case isset($config['temporary_url']['service']):
@@ -340,7 +364,7 @@ final class ZenstruckFilesystemExtension extends ConfigurableExtension
 
             case isset($config['temporary_url']['route']):
                 if (!$canSignUrls) {
-                    throw new LogicException('zenstruck/url is required to sign urls. Install with "composer require zenstruck/uri" and be sure the bundle is enabled.');
+                    throw new LogicException(\sprintf('%s needs to be enabled to sign urls.', ZenstruckUriBundle::class));
                 }
 
                 $container->register($id = '.zenstruck_filesystem.filesystem_temporary_url.'.$name, RouteTemporaryUrlGenerator::class)
