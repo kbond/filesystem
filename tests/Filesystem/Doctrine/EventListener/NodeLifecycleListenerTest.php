@@ -284,7 +284,7 @@ abstract class NodeLifecycleListenerTest extends DoctrineTestCase
         $this->assertSame('public', $image->visibility());
         $this->assertSame(10862, $image->size());
         $this->assertSame('ac6884fc84724d792649552e7211843a', $image->checksum());
-        $this->assertSame('/prefix/some/image.png', $image->publicUrl());
+        $this->assertSame('/prefix/some/image.png?v=10862', $image->publicUrl());
         $this->assertSame('http://localhost/transform/some/image.png?filter=grayscale', $image->transformUrl('grayscale'));
         $this->assertSame(563, $image->dimensions()->width());
         $this->assertSame(678, $image->dimensions()->height());

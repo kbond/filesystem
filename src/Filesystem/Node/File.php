@@ -88,7 +88,9 @@ interface File extends Node
     /**
      * @see FilesystemReader::publicUrl()
      *
-     * @param array<string,mixed> $config
+     * @param array{
+     *     version?: false|Mapping::LAST_MODIFIED|Mapping::SIZE|Mapping::CHECKSUM,
+     * } $config
      *
      * @throws UnableToGeneratePublicUrl
      * @throws FilesystemException

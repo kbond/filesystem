@@ -63,7 +63,10 @@ class FlysystemFile extends FlysystemNode implements File
 
     public function publicUrl(array $config = []): string
     {
-        return $this->cache['public-url'][\serialize($config)] ??= $this->operator->publicUrl($this->path(), $config);
+        return $this->cache['public-url'][\serialize($config)] ??= $this->operator->publicUrl(
+            $this->path(),
+            \array_merge($config, ['_file' => $this])
+        );
     }
 
     public function temporaryUrl(\DateTimeInterface|string $expires, array $config = []): string

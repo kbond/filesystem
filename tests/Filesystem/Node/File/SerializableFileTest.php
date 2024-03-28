@@ -65,7 +65,7 @@ class SerializableFileTest extends TestCase
                 'mime_type' => 'image/jpeg',
                 'checksum' => '42890a25562a1803949caa09d235f242',
                 'size' => 25884,
-                'public_url' => '/prefix/some/image.jpg',
+                'public_url' => '/prefix/some/image.jpg?v=25884',
                 'extension' => 'jpg',
             ],
         ];
