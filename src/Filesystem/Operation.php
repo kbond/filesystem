@@ -13,8 +13,6 @@ namespace Zenstruck\Filesystem;
 
 /**
  * @author Kevin Bond <kevinbond@gmail.com>
- *
- * @TODO make enum in PHP 8.1
  */
 final class Operation
 {
