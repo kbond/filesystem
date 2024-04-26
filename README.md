@@ -847,8 +847,8 @@ zenstruck_filesystem:
             # Extra global adapter filesystem config
             config:               []
 
-            # Lazily load the filesystem when the first call occurs (requires Symfony 6.2+)
-            lazy:                 true/false # if symfony/var-exporter 6.2+ is installed, true, false otherwise
+            # Lazily load the filesystem when the first call occurs
+            lazy:                 true
 
             # Public URL generator for this filesystem
             public_url:
@@ -878,6 +878,16 @@ zenstruck_filesystem:
 
                     # Default expiry
                     expires:              null # Example: '+ 30 minutes'
+
+                # Enables cache busting for public urls
+                version:
+                    enabled:              false
+
+                    # The metadata to use for versioning
+                    metadata:             last_modified # One of "last_modified"; "size"; "checksum"
+
+                    # The query parameter to use for versioning
+                    parameter:            v
 
             # Temporary URL generator for this filesystem
             temporary_url:

@@ -18,7 +18,6 @@ use Psr\Log\LogLevel;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\VarExporter\LazyObjectInterface;
 use Zenstruck\Filesystem;
 use Zenstruck\Filesystem\Node\Mapping;
 use Zenstruck\Filesystem\Operation;
@@ -61,8 +60,8 @@ final class Configuration implements ConfigurationInterface
                                 ->info('Flysystem adapter DSN or, if prefixed with "@" flysystem adapter service id')
                                 ->example([
                                     '%kernel.project_dir%/public/files',
-                                    'ftp://foo:bar@example.com/path',
-                                    's3://accessKeyId:accessKeySecret@bucket/prefix#us-east-1',
+                                    'flysystem+ftp://foo:bar@example.com/path',
+                                    'flysystem+s3://accessKeyId:accessKeySecret@bucket/prefix#us-east-1',
                                     'static-in-memory',
                                     'scoped:<name>:<prefix>',
                                     '@my_adapter_service',
@@ -73,12 +72,8 @@ final class Configuration implements ConfigurationInterface
                                 ->defaultValue([])
                             ->end()
                             ->booleanNode('lazy')
-                                ->info('Lazily load the filesystem when the first call occurs (requires Symfony 6.2+)')
-                                ->validate()
-                                    ->ifTrue(fn($v) => $v && !\interface_exists(LazyObjectInterface::class))
-                                    ->thenInvalid('symfony/var-exporter 6.2+ is required')
-                                ->end()
-                                ->defaultValue(\interface_exists(LazyObjectInterface::class))
+                                ->info('Lazily load the filesystem when the first call occurs')
+                                ->defaultTrue()
                             ->end()
                             ->arrayNode('public_url')
                                 ->info('Public URL generator for this filesystem')
