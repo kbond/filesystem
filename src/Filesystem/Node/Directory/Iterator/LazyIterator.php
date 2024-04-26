@@ -24,7 +24,7 @@ final class LazyIterator implements \IteratorAggregate
 
     public function __construct(callable $iteratorFactory)
     {
-        $this->iteratorFactory = $iteratorFactory instanceof \Closure ? $iteratorFactory : \Closure::fromCallable($iteratorFactory);
+        $this->iteratorFactory = $iteratorFactory(...);
     }
 
     public function getIterator(): \Traversable
