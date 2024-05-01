@@ -26,6 +26,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
 use Zenstruck\Filesystem\Glide\GlideTransformUrlGenerator;
+use Zenstruck\Filesystem\Node\Mapping;
 use Zenstruck\Filesystem\Symfony\Form\PendingFileType;
 use Zenstruck\Filesystem\Symfony\Form\PendingImageType;
 use Zenstruck\Filesystem\Symfony\ZenstruckFilesystemBundle;
@@ -128,6 +129,9 @@ final class TestKernel extends Kernel
                     'image_url' => 'route:public_transform',
                     'reset_before_tests' => true,
                     'events' => true,
+                    'cache' => [
+                        'metadata' => [Mapping::LAST_MODIFIED, Mapping::SIZE]
+                    ],
                 ],
                 'private' => [
                     'dsn' => '%kernel.project_dir%/var/private',

@@ -152,4 +152,15 @@ final class ZenstruckFilesystemBundleTest extends KernelTestCase
 
         $this->filesystem()->assertExists('static://file.txt');
     }
+
+    /**
+     * @test
+     */
+    public function cached_filesystem(): void
+    {
+        /** @var Service $service */
+        $service = self::getContainer()->get(Service::class);
+
+        $this->markTestIncomplete();
+    }
 }
